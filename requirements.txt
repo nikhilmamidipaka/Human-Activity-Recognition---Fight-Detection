@@ -100,7 +100,7 @@ toolz==0.12.1
 tornado==6.4
 tqdm==4.66.2
 typer==0.9.4
-typing_extensions>=3.6.6
+typing_extensions>=4.6.1
 tzdata==2024.1
 urllib3==2.2.1
 wasabi==1.1.2
