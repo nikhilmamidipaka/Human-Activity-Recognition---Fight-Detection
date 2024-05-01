@@ -49,7 +49,7 @@ murmurhash
 namex
 numpy
 oauthlib
-opencv-python
+
 opencv-python-headless
 opt-einsum
 optree
