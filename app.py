@@ -7,7 +7,7 @@ import base64
 #import tensorflow as tf
 from tensorflow.keras.models import load_model
 # from keras.models import load_model
-from keras.initializers import Orthogonal
+from tensorflow.keras.initializers import Orthogonal
 
 initializer = Orthogonal(gain=1.0, seed=None)
 from keras.layers import Dense
