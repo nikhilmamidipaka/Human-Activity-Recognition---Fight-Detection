@@ -13,7 +13,7 @@ from tensorflow.keras.initializers import Orthogonal
 
 
 # Load the model
-model_file_path = "myharm.h5"  # Change this path accordingly
+model_file_path = "/workspaces/Human-Activity-Recognition---Fight-Detection/myharm.h5"  # Change this path accordingly
 convlrcn_model = load_model(model_file_path)
 
 # Define constants
