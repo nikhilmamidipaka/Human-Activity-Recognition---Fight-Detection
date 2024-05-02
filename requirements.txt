@@ -34,7 +34,8 @@ ifaddr
 Jinja2
 jsonschema
 jsonschema-specifications
-
+keras
+keras-models
 langcodes
 language_data
 libclang
@@ -87,7 +88,11 @@ srsly
 streamlit
 streamlit-webrtc
 tenacity
-
+tensorboard
+tensorboard-data-server
+tensorflow
+tensorflow-estimator
+tensorflow-io-gcs-filesystem
 termcolor
 thinc
 toml
@@ -104,13 +109,3 @@ weasel
 Werkzeug
 wrapt
 
-
-
-
-keras==2.13.1
-keras-models==0.0.7
-tensorboard==2.13.0
-tensorboard-data-server==0.7.2
-tensorflow==2.13.0
-tensorflow-estimator==2.13.0
-tensorflow-io-gcs-filesystem==0.37.0
