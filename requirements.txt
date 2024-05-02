@@ -87,7 +87,6 @@ srsly
 streamlit
 streamlit-webrtc
 tenacity
-tensorboard
 
 termcolor
 thinc
