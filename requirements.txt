@@ -90,7 +90,7 @@ streamlit-webrtc
 tenacity
 tensorboard
 tensorboard-data-server
-tensorflow
+tensorflow==2.13.0
 tensorflow-estimator
 tensorflow-io-gcs-filesystem
 termcolor
