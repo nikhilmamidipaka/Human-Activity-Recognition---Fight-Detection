@@ -1,102 +1,71 @@
 import streamlit as st
-import cv2
-import numpy as np
-from collections import deque
-import os
-import base64
-#import tensorflow as tf
-from tensorflow.keras.models import load_model
-# from keras.models import load_model
-from tensorflow.keras.initializers import Orthogonal
-#from keras.initializers import Orthogonal
-
-initializer = Orthogonal(gain=1.0, seed=None)
+import requests
 
 
+from PIL import Image
 
-
-# Load the model
-model_file_path = "myharm.h5"  # Change this path accordingly
-convlrcn_model = load_model(model_file_path)
-
-# Define constants
-IMAGE_HEIGHT = 64
-IMAGE_WIDTH = 64
-SEQUENCE_LENGTH = 20
-CLASSES_LIST = ["noFights", "fights"]
-
-def perform_action_recognition(video_file_path, output_file_path):
-    video_reader = cv2.VideoCapture(video_file_path)
-
-    original_video_width = int(video_reader.get(cv2.CAP_PROP_FRAME_WIDTH))
-    original_video_height = int(video_reader.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-    video_writer = cv2.VideoWriter(output_file_path, cv2.VideoWriter_fourcc(*'mp4v'),
-                                   int(video_reader.get(cv2.CAP_PROP_FPS)), (original_video_width, original_video_height))
-
-    frames_queue = deque(maxlen=SEQUENCE_LENGTH)
-
-    while video_reader.isOpened():
-        ok, frame = video_reader.read()
-
-        if not ok:
-            break
-
-        resized_frame = cv2.resize(frame, (IMAGE_HEIGHT, IMAGE_WIDTH))
-        normalized_frame = resized_frame / 255
-        frames_queue.append(normalized_frame)
-
-        if len(frames_queue) == SEQUENCE_LENGTH:
-            # Perform action recognition
-            predicted_labels_probabilities = convlrcn_model.predict(np.expand_dims(frames_queue, axis=0))[0]
-            predicted_label = np.argmax(predicted_labels_probabilities)
-            predicted_class_name = CLASSES_LIST[predicted_label]
-
-            # Draw predicted class name on frame
-            cv2.putText(frame, predicted_class_name, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            # Draw predicted class name on frame with black background box
-            text_size = cv2.getTextSize(predicted_class_name, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)[0]
-            text_x, text_y = 10, 30  # Position of the text
-            padding = 5  # Padding around the text
-            box_coords = ((text_x, text_y + padding), (text_x + text_size[0] + padding * 2, text_y - text_size[1] - padding))
-
-            # Draw the black background box
-            cv2.rectangle(frame, box_coords[0], box_coords[1], (0, 0, 0), -1)
-
-            # Draw the predicted class name on the frame
-            cv2.putText(frame, predicted_class_name, (text_x + padding, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-        video_writer.write(frame)
-
-    video_reader.release()
-    video_writer.release()
-
-    return output_file_path
-
-def get_binary_file_downloader_html(file_path, title="Download File"):
-    with open(file_path, "rb") as f:
-        video_bytes = f.read()
-    b64 = base64.b64encode(video_bytes).decode()
-    file_href = f'<a href="data:file/mp4;base64,{b64}" download="{os.path.basename(file_path)}">{title}</a>'
-    return file_href
+def resize_image(image_path, target_size):
+    img = Image.open(image_path)
+    img_resized = img.resize(target_size)
+    return img_resized
+def get_google_drive_direct_link(gdrive_link):
+    # Extract the file ID from the Google Drive link
+    file_id = gdrive_link.split("/")[-2]
+    
+    # Make a request to Google Drive API to get the direct link
+    response = requests.get(f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media", allow_redirects=True)
+    
+    # Return the direct link
+    return response.url
 
 def main():
-    st.title("Human Activity Prediction")
+    # Title and Header
+    st.title("Fight Detection: Human Activity Recognition")
+    st.markdown("---")
+    
+    # Introduction
+    st.write("Welcome to Fight Detection, an application for recognizing aggressive human activities in videos.")
+    st.write("Our model uses deep learning techniques to analyze video footage and identify instances of fights.")
+    st.write("With real-time detection capabilities, our application can help monitor and respond to potential security threats.")
+    
+    # Features Section
+    st.markdown("## Features")
+    st.write("1. **Real-Time Detection:** Detect fights as they happen in live video streams.")
+    st.write("2. **Accuracy:** Our model achieves high accuracy in identifying fight scenes.")
+    st.write("3. **Customization:** Fine-tune the model for specific environments or scenarios.")
 
-    uploaded_file = st.file_uploader("Upload a video", type=['mp4'])
-    if uploaded_file is not None:
-        test_videos_directory = 'test_videos'
-        os.makedirs(test_videos_directory, exist_ok=True)
-        video_file_path = os.path.join(test_videos_directory, uploaded_file.name)
-        with open(video_file_path, "wb") as f:
-            f.write(uploaded_file.read())
-        st.success(f"You uploaded: {uploaded_file.name}")
-
-        output_video_file_path = f'{test_videos_directory}/{uploaded_file.name}-Output-SeqLen{SEQUENCE_LENGTH}.mp4'
-        output_video_file_path = perform_action_recognition(video_file_path, output_video_file_path)
-
-        st.success("Prediction complete! You can download the output video below.")
-        st.markdown(get_binary_file_downloader_html(output_video_file_path, "Download Predicted Video"), unsafe_allow_html=True)
-
+    st.markdown("## About the LRCN Model")
+    st.write("The Long-term Recurrent Convolutional Network (LRCN) is a hybrid deep learning model that combines Convolutional Neural Networks (CNNs) and Recurrent Neural Networks (RNNs).")
+    st.write("It excels in tasks involving sequential data like video analysis, where both spatial and temporal features are crucial.")
+    st.write("In the context of this project, the LRCN model accurately identifies aggressive human activities in video footage by capturing both spatial and temporal characteristics, making it a powerful tool for such tasks.")
+    st.write("Key Components:")
+    st.write("- CNNs: Extract spatial features from video frames.")
+    st.write("- RNNs (LSTM/GRU): Model temporal dependencies across frames.")
+    st.write("- Integration: Combines spatial and temporal information.")
+    st.write("- Training: Trained via backpropagation, fine-tuning for specific datasets.")
+    st.write("- Applications: Used in action recognition, activity recognition, and video captioning.")
+    
+    
+    st.markdown("## Demo Images")
+    st.write("See examples of 'Fights' and 'No Fights' scenarios:")
+    
+    # Load and display the images
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("**Fights**")
+        fight_image_resized = resize_image("fight.jfif", (300, 300))
+        st.image(fight_image_resized, use_column_width=True)
+        
+    with col2:
+        st.write("**No Fights**")
+        no_fight_image_resized = resize_image("no fight.jfif", (300, 300))
+        st.image(no_fight_image_resized, use_column_width=True)
+    
+    # About Us Section
+    st.markdown("## About Us")
+    st.write("We are a team of passionate developers dedicated to enhancing security and safety through technology.")
+    st.write("Our mission is to leverage machine learning and computer vision to create innovative solutions for real-world problems.")
+    
+    
 if __name__ == "__main__":
     main()
