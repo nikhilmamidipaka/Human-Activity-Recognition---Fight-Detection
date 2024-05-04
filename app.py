@@ -19,6 +19,7 @@ def get_google_drive_direct_link(gdrive_link):
     return response.url
 
 def main():
+    
     # Title and Header
     st.title("Fight Detection: Human Activity Recognition")
     st.markdown("---")

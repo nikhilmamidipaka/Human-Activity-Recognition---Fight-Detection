@@ -14,7 +14,6 @@ initializer = Orthogonal(gain=1.0, seed=None)
 
 
 
-
 # Load the model
 model_file_path = "myharm.h5"  # Change this path accordingly
 convlrcn_model = load_model(model_file_path)
@@ -85,7 +84,7 @@ def main():
 
     uploaded_file = st.file_uploader("Upload a video", type=['mp4'])
     if uploaded_file is not None:
-        test_videos_directory = '/workspaces/Human-Activity-Recognition---Fight-Detection/test_videos'
+        test_videos_directory = 'test_videos'
         os.makedirs(test_videos_directory, exist_ok=True)
         video_file_path = os.path.join(test_videos_directory, uploaded_file.name)
         with open(video_file_path, "wb") as f:
